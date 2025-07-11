@@ -7,11 +7,24 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('chatbot.html')
+    return render_template('index.html')
 
 @app.route('/chatbot')
 def chatbot():
     return render_template('chatbot.html')
+
+@app.route('/market')
+def market():
+     return render_template('market.html')
+
+@app.route('/farmer')
+def farmer():
+     return render_template('farmer.html')
+
+@app.route('/customer')
+def customer():
+     return render_template('customer.html')
+
 
 @app.route('/get_recommendation', methods=['POST'])
 def get_recommendation():
