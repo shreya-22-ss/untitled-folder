@@ -595,14 +595,14 @@ class UserInterface:
         print(f"- Nutrients (N-P-K): {results['soil']['N']}-{results['soil']['P']}-{results['soil']['K']}")
         
         print("\n🏆 Top 3 Most Profitable Crops:")
-        print("="*120)
+        print("="*80)
         print(f"{'Rank':<5}{'Crop':<25}{'Suitability':<12}{'Current Price':<15}{'Future Price':<15}{'Profit':<12}{'ROI%':<10}{'Growth Days':<12}")
-        print("-"*120)
+        print("-"*80)
         
         for rank, crop in enumerate(results['recommendations'], 1):
             print(f"{rank:<5}{crop['crop']:<25}{crop['probability']:<12.2f}₹{crop['current_price']:<14.2f}₹{crop['future_price']:<14.2f}₹{crop['profit']:<11.2f}{crop['roi']:<10.1f}%{crop['growth_days']:>12}d")
         
-        print("="*120)
+        print("="*80)
         print("Note: Suitability (0-1) measures agronomic compatibility")
         print("      Recommendations combine suitability (60%) and profit potential (40%)")
 

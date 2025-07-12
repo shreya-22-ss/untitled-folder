@@ -1,0 +1,84 @@
+# Manual Deployment Commands for Oracle Cloud Instance
+# Run these commands directly on your Oracle Cloud instance
+
+# Step 1: Update system
+sudo apt update && sudo apt upgrade -y
+
+# Step 2: Install Python and dependencies
+sudo apt install python3 python3-pip python3-venv python3-dev build-essential git -y
+
+# Step 3: Create application directory
+sudo mkdir -p /opt/crop-recommendation-app
+sudo chown $USER:$USER /opt/crop-recommendation-app
+cd /opt/crop-recommendation-app
+
+# Step 4: Download your application files
+# You'll need to upload these files manually or use git
+# For now, let's create the basic structure
+
+# Step 5: Create requirements.txt
+cat > requirements.txt << 'EOF'
+Flask==3.1.1
+pandas==2.3.1
+numpy==2.3.1
+lightgbm==4.6.0
+scikit-learn==1.7.0
+requests==2.32.4
+joblib==1.5.1
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.27.1
+geopy==2.4.1
+gunicorn==21.2.0
+EOF
+
+# Step 6: Create wsgi.py
+cat > wsgi.py << 'EOF'
+from app import app
+
+if __name__ == "__main__":
+    app.run()
+EOF
+
+# Step 7: Set up Python virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Step 8: Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# Step 9: Create systemd service
+sudo tee /etc/systemd/system/crop-recommendation-app.service > /dev/null << 'EOF'
+[Unit]
+Description=Crop Recommendation Flask App
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/opt/crop-recommendation-app
+Environment="PATH=/opt/crop-recommendation-app/venv/bin"
+ExecStart=/opt/crop-recommendation-app/venv/bin/gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 wsgi:app
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Step 10: Configure firewall
+sudo ufw allow 22
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw allow 8000
+sudo ufw --force enable
+
+# Step 11: Start the service
+sudo systemctl daemon-reload
+sudo systemctl enable crop-recommendation-app.service
+sudo systemctl start crop-recommendation-app.service
+
+# Step 12: Check status
+sudo systemctl status crop-recommendation-app.service
+
+# Step 13: View logs (if needed)
+# sudo journalctl -u crop-recommendation-app.service -f 
